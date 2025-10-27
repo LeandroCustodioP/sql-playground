@@ -1,0 +1,66 @@
+name: DB Smoke Test (Postgres)
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+  push:
+    branches: [ develop ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: test
+          POSTGRES_PASSWORD: test
+          POSTGRES_DB: playground
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd="pg_isready -U test -d playground"
+          --health-interval=5s
+          --health-timeout=5s
+          --health-retries=10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Wait for Postgres
+        run: |
+          for i in {1..20}; do
+            if pg_isready -h 127.0.0.1 -p 5432 -U test -d playground; then
+              echo "Postgres is ready!"
+              break
+            fi
+            sleep 2
+          done
+
+      - name: Install psql client
+        run: sudo apt-get update && sudo apt-get install -y postgresql-client
+
+      - name: Sanity query
+        env:
+          PGHOST: 127.0.0.1
+          PGPORT: 5432
+          PGUSER: test
+          PGPASSWORD: test
+          PGDATABASE: playground
+        run: |
+          psql -c "SELECT version();"
+          psql -c "SELECT 1 AS ok;"
+
+      # (Opcional) Execute seus scripts SQL se existirem, por exemplo:
+      # - name: Run schema & seed
+      #   env:
+      #     PGHOST: 127.0.0.1
+      #     PGPORT: 5432
+      #     PGUSER: test
+      #     PGPASSWORD: test
+      #     PGDATABASE: playground
+      #   run: |
+      #     psql -f sql/schema.sql
+      #     psql -f sql/seed.sql

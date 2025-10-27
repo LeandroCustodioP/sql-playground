@@ -1,9 +1,10 @@
-SET search_path TO app, public;
-'EL-' || gs::TEXT,
-'Gadget ' || gs::TEXT,
-(SELECT category_id FROM categories WHERE name='Electronics'),
-(SELECT supplier_id FROM suppliers ORDER BY name OFFSET 1 LIMIT 1),
-9999 + (gs * 250)
+INSERT INTO products (sku, name, category_id, supplier_id, price_cents)
+SELECT
+  'EL-' || gs::TEXT,
+  'Gadget ' || gs::TEXT,
+  (SELECT category_id FROM categories WHERE name='Electronics'),
+  (SELECT supplier_id FROM suppliers ORDER BY name OFFSET 1 LIMIT 1),
+  9999 + (gs * 250)
 FROM generate_series(1, 10) AS gs
 ON CONFLICT DO NOTHING;
 

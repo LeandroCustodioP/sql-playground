@@ -7,11 +7,11 @@ CREATE EXTENSION IF NOT EXISTS citext;       -- usado para coluna CITEXT
 CREATE EXTENSION IF NOT EXISTS pgcrypto;     -- fornece funções criptográficas  
 
 CREATE TABLE IF NOT EXISTS orders (
-  order_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
-  customer_id UUID NOT NULL REFERENCES customers(customer_id),
-  status TEXT NOT NULL CHECK (status IN ('pending','paid','shipped','delivered','cancelled','refunded')),
-  order_ts TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-  shipping_country CHAR(2) REFERENCES countries(country_code)
+order_id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+customer_id UUID NOT NULL REFERENCES customers(customer_id),
+status TEXT NOT NULL CHECK (status IN ('pending','paid','shipped','delivered','cancelled','refunded')),
+order_ts TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+shipping_country CHAR(2) REFERENCES countries(country_code)
 );
 
 -- Segurança básica: criar esquema isolado

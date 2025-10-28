@@ -12,7 +12,7 @@ BEGIN
   -- clientes
   IF (SELECT COUNT(*) FROM customers) = 0 THEN
     INSERT INTO customers (customer_id, customer_name, email)
-    SELECT 
+    SELECT
         uuid_generate_v4(),
         'Cliente ' || i,
         'cliente' || i || '@exemplo.com'
@@ -22,7 +22,7 @@ BEGIN
   -- produtos
   IF (SELECT COUNT(*) FROM products) = 0 THEN
     INSERT INTO products (product_id, product_name, description, category_id, price_cents)
-    SELECT 
+    SELECT
         uuid_generate_v4(),
         'Produto ' || i,
         'Produto exemplo ' || i,
@@ -66,7 +66,7 @@ END LOOP;
 
 -- pagamento parcial/total
 INSERT INTO payments (order_id, payment_method, amount_cents, paid_ts)
-SELECT 
+SELECT
     o_id,
     (ARRAY['card', 'pix', 'boleto', 'paypal'])[1 + (random() * 3)::INT],
     (SELECT COALESCE(sum(quantity * unit_price_cents), 0) FROM order_items WHERE order_id = o_id),
@@ -90,7 +90,7 @@ END $$;
 
 -- Insere algumas avaliações
 INSERT INTO reviews (product_id, customer_id, rating, review_comment)
-SELECT 
+SELECT
     p.product_id,
     c.customer_id,
     (3 + (random() * 2))::INT AS rating,

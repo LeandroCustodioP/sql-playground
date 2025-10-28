@@ -12,7 +12,7 @@ CREATE TABLE IF NOT EXISTS customers (
     customer_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     customer_name text NOT NULL,
     email text UNIQUE NOT NULL,
-    created_at timestamptz NOT NULL DEFAULT NOW()
+    created_at timestamptz NOT NULL DEFAULT now()
 );
 
 -- Categorias
@@ -28,13 +28,13 @@ CREATE TABLE IF NOT EXISTS products (
     description text,
     category_id uuid REFERENCES categories (category_id),
     price_cents int NOT NULL CHECK (price_cents >= 0),
-    created_at timestamptz NOT NULL DEFAULT NOW()
+    created_at timestamptz NOT NULL DEFAULT now()
 );-- Pedidos
 CREATE TABLE IF NOT EXISTS orders (
     order_id uuid PRIMARY KEY DEFAULT uuid_generate_v4(),
     customer_id uuid NOT NULL REFERENCES customers (customer_id) ON DELETE CASCADE,
     order_status text NOT NULL CHECK (order_status IN ('pending', 'paid', 'shipped', 'delivered')),
-    order_ts timestamptz NOT NULL DEFAULT NOW(),
+    order_ts timestamptz NOT NULL DEFAULT now(),
     shipping_country text
 );
 
@@ -73,7 +73,7 @@ CREATE TABLE IF NOT EXISTS reviews (
     customer_id uuid NOT NULL REFERENCES customers (customer_id),
     rating int NOT NULL CHECK (rating BETWEEN 1 AND 5),
     review_comment text,
-    created_at timestamptz NOT NULL DEFAULT NOW(),
+    created_at timestamptz NOT NULL DEFAULT now(),
     UNIQUE (product_id, customer_id)
 );
 

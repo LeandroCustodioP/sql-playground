@@ -36,7 +36,12 @@ git clone https://github.com/LeandroCustodioP/sql-playground.git
 cd sql-playground
 ```
 
-2. Start the environment:
+2. Set up the environment:
+```bash
+cp .env.example .env  # Copy the example file and adjust if needed
+```
+
+3. Start the environment:
 ```bash
 docker compose up -d
 ```
@@ -118,7 +123,12 @@ git clone https://github.com/LeandroCustodioP/sql-playground.git
 cd sql-playground
 ```
 
-2. Inicie o ambiente:
+2. Configure o ambiente:
+```bash
+cp .env.example .env  # Copie o arquivo de exemplo e ajuste se necessário
+```
+
+3. Inicie o ambiente:
 ```bash
 docker compose up -d
 ```

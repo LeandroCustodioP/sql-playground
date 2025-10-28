@@ -74,7 +74,11 @@ END $$;
 
 -- Insere algumas avaliações
 INSERT INTO reviews (product_id, customer_id, rating, comment)
-SELECT p.product_id, c.customer_id, 3 + (random()*2)::INT, 'Ótimo produto!'
-FROM products p
-JOIN customers c ON random() < 0.2
+SELECT 
+    p.product_id,
+    c.customer_id,
+    3 + (random()*2)::INT,
+    'Ótimo produto!'
+FROM products AS p
+JOIN customers AS c ON random() < 0.2
 ON CONFLICT DO NOTHING;

@@ -1,22 +1,30 @@
-INSERT INTO products (sku, name, category_id, supplier_id, price_cents)
-SELECT
-  'EL-' || gs::TEXT,
-  'Gadget ' || gs::TEXT,
-  (SELECT category_id FROM categories WHERE name='Electronics'),
-  (SELECT supplier_id FROM suppliers ORDER BY name OFFSET 1 LIMIT 1),
-  9999 + (gs * 250)
-FROM generate_series(1, 10) AS gs
-ON CONFLICT DO NOTHING;
+SET search_path TO app, public;
 
+-- Se as tabelas principais estiverem vazias, popula com dados mínimos de exemplo
+DO $$
+BEGIN
+  -- categorias
+  IF (SELECT COUNT(*) FROM categories) = 0 THEN
+    INSERT INTO categories (category_id, name)
+    VALUES (uuid_generate_v4(), 'Livros'), (uuid_generate_v4(), 'Eletrônicos'), (uuid_generate_v4(), 'Roupas');
+  END IF;
 
--- Inventory para todos os produtos
-INSERT INTO inventory (product_id, qty_on_hand, reorder_level)
-SELECT p.product_id, (random()*50)::INT + 10, 10
-FROM products p
-ON CONFLICT (product_id) DO NOTHING;
+  -- clientes
+  IF (SELECT COUNT(*) FROM customers) = 0 THEN
+    INSERT INTO customers (customer_id, name, email)
+    SELECT uuid_generate_v4(), 'Cliente ' || i, 'cliente' || i || '@exemplo.com'
+    FROM generate_series(1,20) AS s(i);
+  END IF;
 
-
--- 20 pedidos com 1–3 itens cada
+  -- produtos
+  IF (SELECT COUNT(*) FROM products) = 0 THEN
+    INSERT INTO products (product_id, name, description, category_id, price_cents)
+    SELECT uuid_generate_v4(), 'Produto ' || i, 'Produto exemplo ' || i,
+           (SELECT category_id FROM categories ORDER BY random() LIMIT 1),
+           (10 + (random()*990))::INT * 100
+    FROM generate_series(1,50) AS s(i);
+  END IF;
+END $$;-- Agora gera os pedidos
 DO $$
 DECLARE
 c_id UUID;
@@ -53,10 +61,10 @@ SELECT o_id,
 NOW() - ((random()*25)::INT || ' days')::interval;
 
 
--- envio para parte dos pedidos
+-- gera envio para parte dos pedidos (60% de chance)
 IF random() > 0.4 THEN
 INSERT INTO shipments (order_id, carrier, tracking, shipped_ts, delivered_ts)
-VALUES (o_id,'FastShip','TRK-' || substr(md5(random()::text),1,10),
+VALUES (o_id,'Transportadora','TRK-' || substr(md5(random()::text),1,10),
 NOW() - ((random()*20)::INT || ' days')::interval,
 CASE WHEN random() > 0.5 THEN NOW() - ((random()*10)::INT || ' days')::interval END);
 END IF;
@@ -64,7 +72,7 @@ END LOOP;
 END $$;
 
 
--- Algumas reviews
+-- Insere algumas avaliações
 INSERT INTO reviews (product_id, customer_id, rating, comment)
 SELECT p.product_id, c.customer_id, 3 + (random()*2)::INT, 'Ótimo produto!'
 FROM products p

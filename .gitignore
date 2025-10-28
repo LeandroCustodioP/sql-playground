@@ -1,0 +1,25 @@
+# Environment variables
+.env
+
+# Python virtual environment
+.venv/
+__pycache__/
+*.pyc
+
+# PostgreSQL data directory
+pg_data/
+
+# IDE settings
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS generated files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db

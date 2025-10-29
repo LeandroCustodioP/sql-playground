@@ -15,7 +15,7 @@
 /*
 -- Solution:
 WITH product_sales AS (
-    SELECT 
+    SELECT
         c.category_name,
         p.product_name,
         COALESCE(SUM(oi.quantity), 0) as total_sold,
@@ -25,7 +25,7 @@ WITH product_sales AS (
     LEFT JOIN order_items oi ON p.product_id = oi.product_id
     GROUP BY c.category_id, c.category_name, p.product_name
 )
-SELECT 
+SELECT
     category_name,
     product_name,
     total_sold
@@ -49,7 +49,7 @@ WHERE rank = 1;
 
 /*
 -- Solution:
-SELECT 
+SELECT
     c.customer_name,
     SUM(oi.quantity * oi.unit_price_cents) as total_spent_cents,
     ROUND(AVG(oi.quantity * oi.unit_price_cents), 2) as avg_order_value_cents,
@@ -80,7 +80,7 @@ ORDER BY total_spent_cents DESC;
 
 /*
 -- Solution:
-SELECT 
+SELECT
     p.product_name,
     COUNT(r.review_id) as review_count,
     ROUND(AVG(r.rating), 2) as avg_rating,
@@ -109,7 +109,7 @@ ORDER BY avg_rating DESC;
 
 /*
 -- Solution:
-SELECT 
+SELECT
     o.order_id,
     o.order_status,
     EXTRACT(HOUR FROM p.paid_ts - o.order_ts) as hours_to_payment,

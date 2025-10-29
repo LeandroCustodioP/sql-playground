@@ -18,16 +18,17 @@
 /*
 -- Solution:
 WITH customer_cohorts AS (
-    SELECT 
+    SELECT
         customer_id,
         date_trunc('month', created_at) as cohort_month
     FROM customers
 ),
 customer_activity AS (
-    SELECT 
+    SELECT
         cc.customer_id,
         cc.cohort_month,
-        DATE_PART('month', AGE(date_trunc('month', o.order_ts), cc.cohort_month)) as months_since_signup,
+        DATE_PART('month', AGE(date_trunc('month', o.order_ts),
+  cc.cohort_month)) as months_since_signup,
         COUNT(DISTINCT o.order_id) as orders,
         COALESCE(SUM(oi.quantity * oi.unit_price_cents), 0) as revenue_cents
     FROM customer_cohorts cc
@@ -35,15 +36,18 @@ customer_activity AS (
     LEFT JOIN order_items oi ON o.order_id = oi.order_id
     GROUP BY 1, 2, 3
 )
-SELECT 
+SELECT
     cohort_month,
     COUNT(DISTINCT customer_id) as cohort_size,
     SUM(CASE WHEN months_since_signup = 0 THEN orders END) as month_0_orders,
     SUM(CASE WHEN months_since_signup = 1 THEN orders END) as month_1_orders,
     SUM(CASE WHEN months_since_signup = 2 THEN orders END) as month_2_orders,
-    ROUND(SUM(CASE WHEN months_since_signup = 0 THEN revenue_cents END)::numeric, 2) as month_0_revenue,
-    ROUND(SUM(CASE WHEN months_since_signup = 1 THEN revenue_cents END)::numeric, 2) as month_1_revenue,
-    ROUND(SUM(CASE WHEN months_since_signup = 2 THEN revenue_cents END)::numeric, 2) as month_2_revenue
+    ROUND(SUM(CASE WHEN months_since_signup = 0 THEN revenue_cents END)::numeric,
+  2) as month_0_revenue,
+    ROUND(SUM(CASE WHEN months_since_signup = 1 THEN revenue_cents END)::numeric,
+  2) as month_1_revenue,
+    ROUND(SUM(CASE WHEN months_since_signup = 2 THEN revenue_cents END)::numeric,
+  2) as month_2_revenue
 FROM customer_activity
 GROUP BY cohort_month
 ORDER BY cohort_month;
@@ -71,7 +75,7 @@ WITH order_products AS (
     JOIN order_items oi ON o.order_id = oi.order_id
     JOIN products p ON oi.product_id = p.product_id
 )
-SELECT 
+SELECT
     p1.product_name as product_a,
     p2.product_name as product_b,
     COUNT(*) as bought_together_count
@@ -100,7 +104,7 @@ ORDER BY bought_together_count DESC;
 /*
 -- Solution:
 WITH customer_metrics AS (
-    SELECT 
+    SELECT
         c.customer_id,
         c.customer_name,
         NOW() - MAX(o.order_ts) as days_since_last_order,
@@ -108,18 +112,19 @@ WITH customer_metrics AS (
         COALESCE(SUM(oi.quantity * oi.unit_price_cents), 0) as total_spent_cents,
         NTILE(4) OVER (ORDER BY NOW() - MAX(o.order_ts)) as recency_score,
         NTILE(4) OVER (ORDER BY COUNT(DISTINCT o.order_id)) as frequency_score,
-        NTILE(4) OVER (ORDER BY COALESCE(SUM(oi.quantity * oi.unit_price_cents), 0)) as monetary_score
+        NTILE(4) OVER (ORDER BY COALESCE(SUM(oi.quantity * oi.unit_price_cents),
+  0)) as monetary_score
     FROM customers c
     LEFT JOIN orders o ON c.customer_id = o.customer_id
     LEFT JOIN order_items oi ON o.order_id = oi.order_id
     GROUP BY c.customer_id, c.customer_name
 )
-SELECT 
+SELECT
     customer_name,
     days_since_last_order,
     order_count,
     total_spent_cents,
-    CASE 
+    CASE
         WHEN (recency_score + frequency_score + monetary_score) >= 10 THEN 'VIP'
         WHEN (recency_score + frequency_score + monetary_score) >= 7 THEN 'High Value'
         WHEN (recency_score + frequency_score + monetary_score) >= 4 THEN 'Medium Value'
@@ -146,7 +151,7 @@ ORDER BY total_spent_cents DESC;
 /*
 -- Solution:
 WITH daily_sales AS (
-    SELECT 
+    SELECT
         p.product_id,
         p.product_name,
         date_trunc('day', o.order_ts) as sale_date,
@@ -159,23 +164,23 @@ WITH daily_sales AS (
     GROUP BY 1, 2, 3
 ),
 sales_metrics AS (
-    SELECT 
+    SELECT
         product_name,
         sale_date,
         units_sold,
         revenue_cents,
         AVG(units_sold) OVER (
-            PARTITION BY product_id 
-            ORDER BY sale_date 
+            PARTITION BY product_id
+            ORDER BY sale_date
             ROWS BETWEEN 6 PRECEDING AND CURRENT ROW
         ) as moving_avg_units,
         LAG(units_sold, 7) OVER (
-            PARTITION BY product_id 
+            PARTITION BY product_id
             ORDER BY sale_date
         ) as prev_period_units
     FROM daily_sales
 )
-SELECT 
+SELECT
     product_name,
     sale_date,
     units_sold,

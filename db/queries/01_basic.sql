@@ -13,7 +13,7 @@
 
 /*
 -- Solution:
-SELECT 
+SELECT
     p.product_name,
     p.price_cents,
     c.category_name
@@ -34,7 +34,7 @@ ORDER BY p.price_cents DESC;
 
 /*
 -- Solution:
-SELECT 
+SELECT
     customer_name,
     email,
     created_at
@@ -55,7 +55,7 @@ ORDER BY created_at DESC;
 
 /*
 -- Solution:
-SELECT 
+SELECT
     order_status,
     COUNT(*) as status_count
 FROM orders
@@ -75,7 +75,7 @@ ORDER BY status_count DESC;
 
 /*
 -- Solution:
-SELECT 
+SELECT
     p.product_name,
     p.price_cents
 FROM products p
@@ -96,7 +96,7 @@ WHERE oi.order_id IS NULL;
 
 /*
 -- Solution:
-SELECT 
+SELECT
     c.customer_name,
     c.email,
     COUNT(o.order_id) as order_count

@@ -10,7 +10,8 @@ This is a ready-to-use SQL practice environment featuring a complete e-commerce 
 ### Features
 - 📦 Complete e-commerce database schema
 - 🔄 Sample data automatically generated
-- 🐳 Docker-based (runs anywhere)
+- � SQL practice exercises (basic to advanced)
+- �🐳 Docker-based (runs anywhere)
 - 🔌 Multiple access options
 - 🔧 Easy to reset and modify
 
@@ -84,6 +85,11 @@ docker compose up -d   # Recreates everything from scratch
 │   ├── init/
 │   │   ├── 01_schema.sql  # Database schema
 │   │   └── 02_seed.sql    # Sample data generation
+│   ├── queries/           # SQL practice exercises
+│   │   ├── 01_basic.sql      # Basic exercises
+│   │   ├── 02_intermediate.sql # Intermediate exercises
+│   │   ├── 03_advanced.sql    # Advanced exercises
+│   │   └── README.md          # Exercise documentation
 │   └── README.md          # Database documentation
 ```
 
